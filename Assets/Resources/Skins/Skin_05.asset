@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f7385e266ee94502b3562bfc3c30ab7, type: 3}
+  m_Name: Skin_05
+  m_EditorClassIdentifier: 
+  skinName: Ayoon_C
+  skinSprite: {fileID: -1428333748, guid: 933c8644793864e129d17820b48b0b79, type: 3}
+  price: 5
+  animatorController: {fileID: 9100000, guid: bee0e407fbbb742a39a499630c578881, type: 2}

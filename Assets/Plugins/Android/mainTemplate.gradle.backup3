@@ -1,0 +1,57 @@
+apply plugin: 'com.android.library'
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.0.1'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+android {
+    compileSdkVersion 33
+    buildToolsVersion '33.0.0'
+
+    defaultConfig {
+        minSdkVersion 22
+        targetSdkVersion 33
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    packagingOptions {
+        exclude ('/lib/arm64-v8a/*' + '*')
+        exclude ('/lib/armeabi/*' + '*')
+        exclude ('/lib/mips/*' + '*')
+        exclude ('/lib/mips64/*' + '*')
+        exclude ('/lib/x86/*' + '*')
+        exclude ('/lib/x86_64/*' + '*')
+    }
+}
+
+dependencies {
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    // Android Resolver Dependencies Start
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4' 
+    implementation 'com.google.android.gms:play-services-ads:23.0.0' 
+    implementation 'com.google.android.ump:user-messaging-platform:2.2.0' 
+    // Android Resolver Dependencies End
+    **DEPS**
+}

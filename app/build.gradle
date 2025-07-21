@@ -1,0 +1,91 @@
+apply plugin: 'com.android.application'
+
+dependencies {
+    implementation project(':unityLibrary')
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4' // ConstraintLayout 라이브러리 추가
+    implementation 'com.android.billingclient:billing:5.0.0' // 최신 버전 사용
+}
+
+android {
+    namespace "com.Likemono.SsosAdventure"
+    ndkPath "/Applications/Unity/Hub/Editor/2022.3.38f1/PlaybackEngines/AndroidPlayer/NDK"
+
+    compileSdkVersion 34 // 안정된 최신 버전 사용
+    buildToolsVersion '34.0.0'
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    defaultConfig {
+        minSdkVersion 22
+        targetSdkVersion 34 // 안정된 최신 버전 사용
+        applicationId 'com.Likemono.SsosAdventure'
+        ndk {
+            abiFilters 'armeabi-v7a'
+        }
+        versionCode 1
+        versionName '1.01'
+    }
+
+    aaptOptions {
+        noCompress 'unity3d', 'ress', 'resource', 'obb', 'bundle', 'unityexp'
+        ignoreAssetsPattern "!*.svn:!*.git:!*.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~"
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+            jniDebuggable true
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    packagingOptions {
+        pickFirst 'lib/armeabi-v7a/*.so'
+        pickFirst 'lib/x86/*.so'
+        jniLibs {
+            useLegacyPackaging true
+        }
+    }
+
+    bundle {
+        language {
+            enableSplit = false
+        }
+        density {
+            enableSplit = false
+        }
+        abi {
+            enableSplit = true
+        }
+    }
+}
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.0.0'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
