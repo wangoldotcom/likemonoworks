@@ -1,5 +1,5 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/GameManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="build.gradle">
     <Files>
       <File FileName="Assets/Scripts/AdsManager.cs" Line="9" Column="30" />
       <File FileName="Assets/Scripts/Boss.cs" />
@@ -13,7 +13,7 @@
       <File FileName="Assets/Scripts/Enemy.cs" />
       <File FileName="Assets/Scripts/EnemySpawner.cs" />
       <File FileName="Assets/Scripts/FontLoader.cs" />
-      <File FileName="Assets/Scripts/GameManager.cs" Line="674" Column="10" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="664" Column="32" />
       <File FileName="Assets/Scripts/HeartUIFollow.cs" />
       <File FileName="Assets/Scripts/IAPManager.cs" />
       <File FileName="Assets/Scripts/LogoSceneManager.cs" />
@@ -27,16 +27,15 @@
       <File FileName="Assets/Resources/IAPProductCatalog.json" />
       <File FileName="Assets/Scripts/Candy.cs" />
       <File FileName="Assets/Scripts/BaseItem.cs" />
+      <File FileName="build.gradle" Line="19" Column="2" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
-          <Node name="YwhyA_Sso" expanded="True">
+          <Node name="YwhyA_Sso" expanded="True" selected="True">
             <Node name="Assembly-CSharp" expanded="True">
               <Node name="Assets" expanded="True">
-                <Node name="Scripts" expanded="True">
-                  <Node name="GameManager.cs" selected="True" />
-                </Node>
+                <Node name="Scripts" expanded="True" />
               </Node>
             </Node>
           </Node>
@@ -46,7 +45,6 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="837f12a8-0d90-4f7f-be12-ac8a03373a97" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

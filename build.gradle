@@ -6,10 +6,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.0.0' // 최신 버전으로 업데이트
-        implementation 'com.google.android.gms:play-services-ads:21.0.0'
-        implementation 'com.android.billingclient:billing:5.0.0' // 최신 버전으로 사용
-
+        classpath 'com.android.tools.build:gradle:8.0.0'
+        // 여기에는 classpath 항목만 둡니다.
     }
 }
 
