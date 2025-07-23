@@ -500,18 +500,12 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator ShowTutorialAndStartGame()
     {
-        if (PlayerPrefs.GetInt("HasSeenTutorial", 0) == 0)
-        {
-            tutorialPanel?.SetActive(true);
-            Time.timeScale = 0f; // 게임을 일시 중지
-            yield return new WaitForSecondsRealtime(5f);
-            tutorialPanel?.SetActive(false);
-            PlayerPrefs.SetInt("HasSeenTutorial", 1);
-            PlayerPrefs.Save();
-            Time.timeScale = 1f; // 게임을 다시 정상 속도로 진행
-        }
+        // 튜토리얼 패널을 사용하지 않도록 설정
+        tutorialPanel?.SetActive(false);
+        PlayerPrefs.SetInt("HasSeenTutorial", 1);
+        PlayerPrefs.Save();
 
-        // 튜토리얼이 끝난 후 게임 시작
+        // 튜토리얼을 건너뛰고 바로 게임 시작
         StartGameAfterTutorial();
     }
 
