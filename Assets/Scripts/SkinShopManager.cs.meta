@@ -3,7 +3,16 @@ guid: 3258aa6e61c3b4da0a91bb1317ed41de
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - contentParent: {instanceID: 0}
+  - skinButtonPrefab: {fileID: 1100858885765548082, guid: b74460e8442e045bebc64420d1377a4d, type: 3}
+  - candyDisplayText: {instanceID: 0}
+  - playerSkinManager: {instanceID: 0}
+  - skinPreviewManager: {instanceID: 0}
+  - purchaseConfirmationPopup: {instanceID: 0}
+  - confirmationText: {instanceID: 0}
+  - yesButton: {instanceID: 0}
+  - noButton: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

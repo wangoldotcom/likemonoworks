@@ -1,5 +1,5 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workbench ActiveDocument="build.gradle">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/SkinShopManager.cs">
     <Files>
       <File FileName="Assets/Scripts/AdsManager.cs" Line="9" Column="30" />
       <File FileName="Assets/Scripts/Boss.cs" />
@@ -13,7 +13,7 @@
       <File FileName="Assets/Scripts/Enemy.cs" />
       <File FileName="Assets/Scripts/EnemySpawner.cs" />
       <File FileName="Assets/Scripts/FontLoader.cs" />
-      <File FileName="Assets/Scripts/GameManager.cs" Line="664" Column="32" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="818" Column="40" />
       <File FileName="Assets/Scripts/HeartUIFollow.cs" />
       <File FileName="Assets/Scripts/IAPManager.cs" />
       <File FileName="Assets/Scripts/LogoSceneManager.cs" />
@@ -28,14 +28,17 @@
       <File FileName="Assets/Scripts/Candy.cs" />
       <File FileName="Assets/Scripts/BaseItem.cs" />
       <File FileName="build.gradle" Line="19" Column="2" />
+      <File FileName="Assets/Scripts/SkinShopManager.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
-          <Node name="YwhyA_Sso" expanded="True" selected="True">
+          <Node name="YwhyA_Sso" expanded="True">
             <Node name="Assembly-CSharp" expanded="True">
               <Node name="Assets" expanded="True">
-                <Node name="Scripts" expanded="True" />
+                <Node name="Scripts" expanded="True">
+                  <Node name="SkinShopManager.cs" selected="True" />
+                </Node>
               </Node>
             </Node>
           </Node>

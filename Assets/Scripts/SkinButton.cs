@@ -4,68 +4,49 @@ using TMPro;
 
 public class SkinButton : MonoBehaviour
 {
-    [SerializeField] private Image skinImage;
+    [SerializeField] private Image iconImage;   // 미리보기 이미지
     [SerializeField] private TextMeshProUGUI priceText;
     [SerializeField] private TextMeshProUGUI skinNameText;
     [SerializeField] private Button button;
-    [SerializeField] private Image lockIcon;
 
     private SkinData skinData;
+
+    // 원하는 “흐릿한” 색 (채도↓·투명도↓) – 필요에 따라 조절
+    private readonly Color lockedColor   = new(1f, 1f, 1f, 0.35f);
+    private readonly Color unlockedColor = Color.white;
 
     public void Setup(SkinData data)
     {
         skinData = data;
+        iconImage.sprite   = data.skinSprite;
+        priceText.text     = data.price.ToString();
+        skinNameText.text  = data.skinName;
 
-        if (skinImage != null)
-            skinImage.sprite = data.skinSprite;
-        if (priceText != null)
-            priceText.text = data.price.ToString();
-        if (skinNameText != null)
-            skinNameText.text = data.skinName;
-
-        // 초기 잠금 아이콘 상태 설정
-        UpdateLockIconState();
-
+        RefreshVisual();              // 처음 상태 적용
         button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(OnSkinButtonClicked);
+        button.onClick.AddListener(OnClick);
     }
 
-    private void OnSkinButtonClicked()
+    private void OnClick()
     {
-        SkinShopManager shopManager = FindObjectOfType<SkinShopManager>();
-        if (shopManager != null)
-        {
-            shopManager.PurchaseOrSelectSkin(skinData);
-        }
-        else
-        {
-            Debug.LogWarning("SkinShopManager를 찾을 수 없습니다.");
-        }
+        FindObjectOfType<SkinShopManager>()?
+            .PurchaseOrSelectSkin(skinData, this);   // ← this 추가
     }
 
-    /// <summary>
-    /// 스킨 구매 여부에 따라 잠금 아이콘을 갱신합니다.
-    /// </summary>
-    public void UpdateLockIconState()
+    public void RefreshVisual()
     {
-        if (skinData == null || lockIcon == null)
-            return;
+        if (this == null || iconImage == null) return;   // 파괴·누락 보호
 
-        bool isPurchased = PlayerPrefs.GetInt("Skin_" + skinData.skinName, 0) == 1;
-        lockIcon.gameObject.SetActive(!isPurchased);
-        Canvas.ForceUpdateCanvases();
-    }
-    
+        bool purchased = PlayerPrefs.GetInt($"Skin_{skinData.skinName}", 0) == 1;
 
-    /// <summary>
-    /// 잠금 아이콘을 즉시 비활성화하고 레이아웃을 재구성합니다.
-    /// </summary>
-    public void DisableLockIconImmediately()
-    {
-        if (lockIcon != null)
-        {
-            lockIcon.gameObject.SetActive(false);
-            LayoutRebuilder.ForceRebuildLayoutImmediate(lockIcon.transform.parent as RectTransform);
-        }
+        // 1) 아이콘 색
+        iconImage.color = purchased ? unlockedColor : lockedColor;
+
+        // 2) Button 루트(targetGraphic) 색도 동일하게
+        if (button.targetGraphic != null)
+            button.targetGraphic.color = purchased ? unlockedColor : lockedColor;
+
+        // 3) 가격 표시는 미구매 상태에서만
+        priceText?.gameObject.SetActive(!purchased);
     }
 }

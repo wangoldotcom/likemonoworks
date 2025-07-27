@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skinName: Soyoon_B
   skinSprite: {fileID: -937634570, guid: 4347544e66872469ab5f8fbc9ab1bccf, type: 3}
-  price: 2
+  price: 200
   animatorController: {fileID: 9100000, guid: 43aacc08951f846c2b0f45ae8f144522, type: 2}

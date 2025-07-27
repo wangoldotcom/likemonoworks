@@ -119,20 +119,17 @@ public class Enemy : MonoBehaviour
         }
 
         // Candy는 30% 확률로 드랍
-        float randomValue = Random.Range(0f, 1f);
-        Debug.Log($"RandomValue for Candy Drop: {randomValue}");
-        if (randomValue < candyDropChance)
+        if (Random.Range(0f, 1f) < candyDropChance)
         {
-            Debug.Log("Candy dropped!");
-            int candyCount = GameManager.instance.isHardMode ? baseCandyDropCount * 2 : baseCandyDropCount;
-            for (int i = 0; i < candyCount; i++)
+            int multiplier = 1;
+            switch (GameManager.instance.CurrentStage)
             {
-                Instantiate(candyPrefab, transform.position, Quaternion.identity);
+                case 3:  multiplier = 2; break;   // 3스테이지 → 2배
+                case 4:  multiplier = 3; break;   // 4스테이지 → 3배
             }
-        }
-        else
-        {
-            Debug.Log("Candy did not drop.");
+            int candyCount = baseCandyDropCount * multiplier;
+            for (int i = 0; i < candyCount; i++)
+                Instantiate(candyPrefab, transform.position, Quaternion.identity);
         }
     }
 

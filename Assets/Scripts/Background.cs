@@ -43,16 +43,15 @@ public class Background : MonoBehaviour
     // 배경 스프라이트를 변경하는 메서드
     public void ChangeBackgroundSprite()
     {
+        // ① 스프라이트 교체
         spriteIndex = (spriteIndex + 1) % backgroundSprites.Length;
-        Debug.Log($"Changing background to sprite index: {spriteIndex}");
-        if (backgroundRenderer != null && backgroundSprites.Length > spriteIndex)
+        backgroundRenderer.sprite = backgroundSprites[spriteIndex];
+
+        // ② 스테이지 진행 (GameManager에 최대 4까지만)
+        if (GameManager.instance != null)
         {
-            backgroundRenderer.sprite = backgroundSprites[spriteIndex];
-            Debug.Log("Background sprite changed successfully to index: " + spriteIndex);
-        }
-        else
-        {
-            Debug.LogError($"Failed to change background. Renderer: {backgroundRenderer}, Sprites count: {backgroundSprites.Length}, Index: {spriteIndex}");
+            int next = Mathf.Clamp(GameManager.instance.CurrentStage + 1, 1, 4);
+            GameManager.instance.SetCurrentStage(next);   // ← 새 메서드로 값만 갱신
         }
     }
 

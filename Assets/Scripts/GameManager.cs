@@ -109,6 +109,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private GameObject healthPanel; // 체력 패널
 
+    [SerializeField] private GameObject candyPanel;
+
+    public int CurrentStage { get; private set; } = 1;   
     private int currentLanguage; // 경고를 없애기 위해 사용하도록 설정
 
     [SerializeField] private GameObject optionsPanel; // 옵션 패널을 할당
@@ -183,6 +186,11 @@ public class GameManager : MonoBehaviour
     public Boss currentBoss;
     private int currentBossIndex = 0;
     private int playAgainCount = 0;
+
+    public void SetCurrentStage(int stage)
+    {
+        CurrentStage = Mathf.Clamp(stage, 1, 4);
+    }
 
     void Awake()
     {
@@ -449,6 +457,9 @@ public class GameManager : MonoBehaviour
             playerInstance.SetActive(false);
         }
 
+        if (candyPanel != null)
+            candyPanel.SetActive(true);
+
         ResetBackground();
 
         PlayBGM(startBGM, true);
@@ -494,25 +505,6 @@ public class GameManager : MonoBehaviour
         // 캔디는 누적된 값 유지
         UpdateCandyUI();
 
-        // 게임 시작 로직 전에 튜토리얼 패널을 보여줍니다.
-        StartCoroutine(ShowTutorialAndStartGame());
-    }
-
-    private IEnumerator ShowTutorialAndStartGame()
-    {
-        if (PlayerPrefs.GetInt("HasSeenTutorial", 0) == 0)
-        {
-            tutorialPanel?.SetActive(true);
-            Time.timeScale = 0f; // 게임을 일시 중지
-            yield return new WaitForSecondsRealtime(5f);
-            tutorialPanel?.SetActive(false);
-            PlayerPrefs.SetInt("HasSeenTutorial", 1);
-            PlayerPrefs.Save();
-            Time.timeScale = 1f; // 게임을 다시 정상 속도로 진행
-        }
-
-        // 튜토리얼이 끝난 후 게임 시작
-        StartGameAfterTutorial();
     }
 
     private void InitializeGame()
@@ -645,7 +637,7 @@ public class GameManager : MonoBehaviour
         healthPanel?.SetActive(true);  // 게임 시작 시 체력 패널 활성화       
 
         // 기타 초기화 로직
-        StartCoroutine(ShowTutorialAndStartGame());
+        
 
         InitializeGame(); // 공통 초기화 호출
 
@@ -711,10 +703,10 @@ public class GameManager : MonoBehaviour
 
     public void IncreaseCandy()
     {
-        totalCandies++; // 총 캔디 수 증가
-        PlayerPrefs.SetInt("TotalCandies", totalCandies); // 저장
-        PlayerPrefs.Save(); // 강제 저장
-        UpdateCandyUI(); // UI 업데이트
+        totalCandies += 1;
+        PlayerPrefs.SetInt("TotalCandies", totalCandies);
+        PlayerPrefs.Save();
+        UpdateCandyUI();
     }
         
     private void LoadGameData()
@@ -758,6 +750,7 @@ public class GameManager : MonoBehaviour
         if (background != null)
         {
             background.ChangeBackgroundSprite();
+            SetCurrentStage(CurrentStage + 1);   // 1 → 2 → 3 → 4
         }
 
         if (bossKillCount >= bossKillLimit)
@@ -833,6 +826,7 @@ public class GameManager : MonoBehaviour
     private void StartHardMode()
     {
         StartGame(true); // 하드 모드로 게임 시작
+        healthPanel?.SetActive(true);
 
         if (hardPanel != null)
         {
@@ -958,6 +952,9 @@ public class GameManager : MonoBehaviour
             scoreBoardPanel.SetActive(false);
         }
 
+        if (candyPanel != null)
+            candyPanel.SetActive(false);    // ← 추가
+
         if (endingCreditsVideoPlayer != null)
         {
             endingCreditsVideoPlayer.Play();
@@ -1033,6 +1030,7 @@ public class GameManager : MonoBehaviour
 
     private void ResetGameManagerState()
     {
+        CurrentStage = 1;
         gameState = GameState.Playing;
         isGameOver = false;
         isBossDefeated = false;

@@ -1,196 +1,156 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UI;      // LayoutRebuilder, Button
 using TMPro;
 
 public class SkinShopManager : MonoBehaviour
 {
-    [Header("동적 UI 생성 관련")]
-    [SerializeField] private Transform contentParent; // 스크롤뷰 Content 오브젝트
-    [SerializeField] private GameObject skinButtonPrefab; // 스킨 버튼 프리팹
+    /*─────────── Inspector ───────────*/
+    [Header("동적 UI 생성")]
+    [SerializeField] private Transform contentParent;      // Scroll-View Content
+    [SerializeField] private GameObject skinButtonPrefab;   // 버튼 프리팹
 
-    [Header("Skin Data 목록")]
-    [SerializeField] private List<SkinData> availableSkins; // Inspector에서 할당할 SkinData 에셋 목록
+    [Header("데이터")]
+    [SerializeField] private List<SkinData> availableSkins;
 
-    [Header("Candy 표시 UI")]
+    [Header("Candy UI")]
     [SerializeField] private TextMeshProUGUI candyDisplayText;
 
     [Header("참조")]
-    [SerializeField] private PlayerSkinManager playerSkinManager;    // 실제 플레이어 스킨 적용용
-    [SerializeField] private SkinPreviewManager skinPreviewManager;    // 스킨 미리보기용
+    [SerializeField] private PlayerSkinManager playerSkinManager;
+    [SerializeField] private SkinPreviewManager skinPreviewManager;
 
-    [Header("Purchase Confirmation Popup")]
-    [SerializeField] private GameObject purchaseConfirmationPopup; // 구매 확인 팝업 패널
-    [SerializeField] private TextMeshProUGUI confirmationText;       // 팝업 내 메시지 텍스트
-    [SerializeField] private Button yesButton;                       // Yes 버튼
-    [SerializeField] private Button noButton;                        // No 버튼
+    [Header("구매 확인 팝업")]
+    [SerializeField] private GameObject purchaseConfirmationPopup;
+    [SerializeField] private TextMeshProUGUI confirmationText;
+    [SerializeField] private Button yesButton;
+    [SerializeField] private Button noButton;
+    /*──────────────────────────────────*/
 
-    private Dictionary<string, SkinButton> skinButtonDict = new Dictionary<string, SkinButton>();
+    private readonly Dictionary<string, SkinButton> skinButtonDict = new();
 
-    private void Start()
+    /*─────────── Life-cycle ───────────*/
+    private void OnEnable()
     {
-        PopulateSkinList();
+        if (skinButtonDict.Count == 0) PopulateSkinList();  // 최초 1회만
         UpdateCandyDisplay();
     }
 
-    // 동적으로 스킨 버튼을 생성합니다.
+    #region 동적 버튼 생성
     private void PopulateSkinList()
     {
-        foreach (Transform child in contentParent)
-        {
-            Destroy(child.gameObject);
-        }
+        foreach (Transform child in contentParent) Destroy(child.gameObject);
         skinButtonDict.Clear();
+
         foreach (SkinData skin in availableSkins)
         {
-            GameObject newButton = Instantiate(skinButtonPrefab, contentParent);
-            SkinButton skinButton = newButton.GetComponent<SkinButton>();
-            if (skinButton != null)
-            {
-                skinButton.Setup(skin);
-                if (!skinButtonDict.ContainsKey(skin.skinName))
-                    skinButtonDict.Add(skin.skinName, skinButton);
-            }
+            GameObject obj = Instantiate(skinButtonPrefab, contentParent);
+            SkinButton btn = obj.GetComponent<SkinButton>();
+            if (btn == null) continue;
+
+            btn.Setup(skin);
+            skinButtonDict.TryAdd(skin.skinName, btn);
         }
+        StartCoroutine(RebuildLayoutNextFrame());
     }
 
-    private IEnumerator RefreshLockIcon(SkinButton button)
+    private IEnumerator RebuildLayoutNextFrame()
     {
-        yield return new WaitForEndOfFrame();
         yield return null;
-        button.UpdateLockIconState();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(
+            contentParent.GetComponent<RectTransform>());
     }
+    #endregion
 
-    // Candy 수를 UI에 표시합니다.
+    /*──────────── Candy UI ────────────*/
     private void UpdateCandyDisplay()
     {
-        if (candyDisplayText != null)
-        {
-            int totalCandies = PlayerPrefs.GetInt("TotalCandies", 0);
-            Debug.Log("TotalCandies in PlayerPrefs: " + totalCandies);
-            candyDisplayText.text = totalCandies.ToString();
-        }
+        if (!candyDisplayText) return;
+        int total = PlayerPrefs.GetInt("TotalCandies", 0);
+        candyDisplayText.text = total.ToString();
     }
 
     public bool TrySpendCandy(int cost)
     {
-        int totalCandies = PlayerPrefs.GetInt("TotalCandies", 0);
-        if (totalCandies >= cost)
-        {
-            totalCandies -= cost;
-            PlayerPrefs.SetInt("TotalCandies", totalCandies);
-            PlayerPrefs.Save();
-            return true;
-        }
-        return false;
+        int total = PlayerPrefs.GetInt("TotalCandies", 0);
+        if (total < cost) return false;
+
+        PlayerPrefs.SetInt("TotalCandies", total - cost);
+        PlayerPrefs.Save();
+        return true;
+    }
+    /*──────────────────────────────────*/
+
+    #region 구매·선택 처리
+    // 외부에서 버튼 참조 없이 호출할 때
+    public void PurchaseOrSelectSkin(SkinData skin) =>
+        PurchaseOrSelectSkin(skin, null);
+
+    // 버튼 자신을 함께 넘겨 주는 오버로드
+    public void PurchaseOrSelectSkin(SkinData skin, SkinButton callerBtn)
+    {
+        if (!skin) return;
+
+        bool purchased = PlayerPrefs.GetInt($"Skin_{skin.skinName}", 0) == 1;
+        if (purchased) SelectSkin(skin, callerBtn);
+        else ShowPurchaseConfirmationPopup(skin, callerBtn);
     }
 
-    // 스킨 구매 또는 선택을 처리합니다.
-    public void PurchaseOrSelectSkin(SkinData skinData)
+    private void SelectSkin(SkinData skin, SkinButton btn = null)
     {
-        if (skinData == null)
+        PlayerPrefs.SetString("SelectedSkin", skin.skinName);
+        PlayerPrefs.Save();
+
+        skinPreviewManager?.UpdatePreview(skin);
+
+        // 즉시 시각 갱신
+        if (btn != null) btn.RefreshVisual();
+        else if (skinButtonDict.TryGetValue(skin.skinName, out var b))
+            b.RefreshVisual();
+    }
+
+    private void ShowPurchaseConfirmationPopup(SkinData skin, SkinButton callerBtn)
+    {
+        if (!purchaseConfirmationPopup) return;
+
+        purchaseConfirmationPopup.SetActive(true);
+        confirmationText.text =
+            $"Buy <color=yellow>{skin.skinName}</color> for {skin.price} Candy ?";
+
+        yesButton.onClick.RemoveAllListeners();
+        noButton.onClick.RemoveAllListeners();
+
+        yesButton.onClick.AddListener(() =>
         {
-            Debug.LogWarning("SkinData가 null입니다.");
-            return;
-        }
-
-        bool isPurchased = PlayerPrefs.GetInt("Skin_" + skinData.skinName, 0) == 1;
-
-        if (isPurchased)
-        {
-            // 이미 구매된 경우, 선택한 스킨을 저장하고 미리보기 업데이트
-            PlayerPrefs.SetString("SelectedSkin", skinData.skinName);
-            PlayerPrefs.Save();
-
-            if (skinPreviewManager != null)
+            if (TrySpendCandy(skin.price))
             {
-                skinPreviewManager.UpdatePreview(skinData);
+                // █ 구매 성공 █
+                PlayerPrefs.SetInt($"Skin_{skin.skinName}", 1);
+                PlayerPrefs.Save();
+                UpdateCandyDisplay();
+                SelectSkin(skin, callerBtn);        // 색·락 바로 갱신
+                purchaseConfirmationPopup.SetActive(false);
             }
             else
             {
-                Debug.LogWarning("미리보기 관리자(SkinPreviewManager)가 연결되어 있지 않습니다.");
+                // █ 잔액 부족 █
+                confirmationText.text = "<color=red>Not enough candy!</color>";
+                StartCoroutine(ClosePopupAfterDelay(1f));
             }
-        }
-        else
-        {
-            // 아직 구매되지 않은 경우, 구매 확인 팝업을 띄웁니다.
-            ShowPurchaseConfirmationPopup(skinData);
-        }
+        });
 
-        if (skinButtonDict.TryGetValue(skinData.skinName, out SkinButton targetButton))
-        {
-            targetButton.DisableLockIconImmediately();
-            // 그리고 이후 RefreshLockIcon 코루틴 호출 (옵션)
-            StartCoroutine(RefreshLockIcon(targetButton));
-        }
+        noButton.onClick.AddListener(() =>
+            purchaseConfirmationPopup.SetActive(false));
     }
+    #endregion
 
-    private void ShowPurchaseConfirmationPopup(SkinData skinData)
+    /*──────────── 유틸 ────────────*/
+    private IEnumerator ClosePopupAfterDelay(float seconds)
     {
-        if (purchaseConfirmationPopup != null)
-        {
-            purchaseConfirmationPopup.SetActive(true);
-            if (confirmationText != null)
-            {
-                confirmationText.text = $"Would you like to purchase {skinData.skinName} for {skinData.price} candy?";
-            }
-            yesButton.onClick.RemoveAllListeners();
-            noButton.onClick.RemoveAllListeners();
-
-            yesButton.onClick.AddListener(() =>
-            {
-                if (TrySpendCandy(skinData.price))
-                {
-                    // 구매 처리: 구매 상태 저장
-                    PlayerPrefs.SetInt("Skin_" + skinData.skinName, 1);
-                    PlayerPrefs.SetString("SelectedSkin", skinData.skinName);
-                    PlayerPrefs.Save();
-
-                    UpdateCandyDisplay();
-
-                    if (skinPreviewManager != null)
-                    {
-                        skinPreviewManager.UpdatePreview(skinData);
-                    }
-                    else
-                    {
-                        Debug.LogWarning("미리보기 관리자(SkinPreviewManager)가 연결되어 있지 않습니다.");
-                    }
-                }
-                else
-                {
-                    Debug.Log("Not enough candy");
-                }
-                purchaseConfirmationPopup.SetActive(false);
-            });
-
-            noButton.onClick.AddListener(() =>
-            {
-                purchaseConfirmationPopup.SetActive(false);
-            });
-        }
-        else
-        {
-            Debug.LogWarning("Purchase confirmation popup is not assigned.");
-        }
-    }
-
-    private void ApplySkin(SkinData skinData)
-    {
-        if (skinData == null)
-        {
-            Debug.LogWarning("skinData가 할당되어 있지 않습니다.");
-            return;
-        }
-
-        if (playerSkinManager != null)
-        {
-            playerSkinManager.ChangeSkin(skinData);
-        }
-        else
-        {
-            Debug.LogWarning("PlayerSkinManager를 찾을 수 없습니다. 선택된 스킨 정보만 저장합니다.");
-        }
+        yield return new WaitForSeconds(seconds);
+        if (purchaseConfirmationPopup != null &&
+            purchaseConfirmationPopup.activeSelf)
+            purchaseConfirmationPopup.SetActive(false);
     }
 }

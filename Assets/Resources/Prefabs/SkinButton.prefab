@@ -148,11 +148,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91e27ff06def5457586289dc7197f591, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skinImage: {fileID: 3615179216593891133}
+  iconImage: {fileID: 3615179216593891133}
   priceText: {fileID: 5309887480330283649}
   skinNameText: {fileID: 3071211018771877376}
   button: {fileID: 1929307132696518851}
-  lockIcon: {fileID: 4685837646261214621}
 --- !u!1 &4220279181417809646
 GameObject:
   m_ObjectHideFlags: 0

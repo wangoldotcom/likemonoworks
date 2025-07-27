@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skinName: Ayoon_C
   skinSprite: {fileID: -1428333748, guid: 933c8644793864e129d17820b48b0b79, type: 3}
-  price: 5
+  price: 500
   animatorController: {fileID: 9100000, guid: bee0e407fbbb742a39a499630c578881, type: 2}

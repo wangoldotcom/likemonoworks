@@ -6,6 +6,9 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField]
     private GameObject deathEffectPrefab; // 죽음 이펙트 프리팹
 
+    [SerializeField] private float blinkDuration = 0.1f;   // 한 번 깜빡일 시간
+    private Coroutine blinkCo;
+
     public int maxHealth = 2;
     public int currentHealth;
     private bool isInvincible = false; // 무적 상태를 나타내는 변수 추가
@@ -40,24 +43,26 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if (isInvincible || currentHealth <= 0) return; // 무적 상태거나 이미 체력이 0이면 데미지 없음
+        if (isInvincible || currentHealth <= 0) return;
 
         currentHealth -= damage;
-        OnHealthChanged?.Invoke(); // 체력이 변경될 때 이벤트를 호출하여 UI 갱신
-        Debug.Log("Player took damage. Current health: " + currentHealth);
+        OnHealthChanged?.Invoke();
 
         if (currentHealth <= 0)
         {
             currentHealth = 0;
-            PlayDeathEffect();  // 죽음 효과 실행
-            GameManager.instance.SetGameOver(); // 체력이 0 이하가 되면 게임오버 상태로 전환
-            gameObject.SetActive(false); // 플레이어 오브젝트 비활성화
+            PlayDeathEffect();
+            GameManager.instance.SetGameOver();
+            gameObject.SetActive(false);
+            return;                         // 죽으면 아래 로직 건너뜀
         }
-        else
-        {
-            StartCoroutine(BlinkEffect());
-            StartCoroutine(InvincibilityCoroutine());
-        }
+
+        // ――― 깜빡임 중복 방지 ―――
+        if (blinkCo != null) StopCoroutine(blinkCo);
+        blinkCo = StartCoroutine(BlinkEffect());
+
+        // ――― 무적 0.5초 ―――
+        StartCoroutine(InvincibilityCoroutine());
     }
 
     public void IncreaseMaxHealth(int amount)
@@ -69,13 +74,19 @@ public class PlayerHealth : MonoBehaviour
 
     private IEnumerator BlinkEffect()
     {
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        for (int i = 0; i < 5; i++)
+        // ✅ 루트 + 자식에 있는 모든 SpriteRenderer 수집
+        SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>();
+
+        int blinkCount = 4;         // 총 4회 깜빡
+        for (int i = 0; i < blinkCount; i++)
         {
-            spriteRenderer.enabled = false;
-            yield return new WaitForSeconds(0.1f);
-            spriteRenderer.enabled = true;
-            yield return new WaitForSeconds(0.1f);
+            // OFF
+            foreach (var r in renderers) r.enabled = false;
+            yield return new WaitForSeconds(blinkDuration);
+
+            // ON
+            foreach (var r in renderers) r.enabled = true;
+            yield return new WaitForSeconds(blinkDuration);
         }
     }
 
@@ -91,7 +102,7 @@ public class PlayerHealth : MonoBehaviour
         if (collision.gameObject.CompareTag("Enemy"))
         {
             TakeDamage(1);
-            StartCoroutine(InvincibilityCoroutine()); // 무적 상태만 유지
+            //StartCoroutine(InvincibilityCoroutine()); // 무적 상태만 유지
         }
     }
 
