@@ -19,7 +19,7 @@ public class Bullet : MonoBehaviour
         direction = newDirection.normalized;
         if (rb != null)
         {
-            rb.velocity = direction * speed;
+            rb.linearVelocity = direction * speed;
         }
     }
 

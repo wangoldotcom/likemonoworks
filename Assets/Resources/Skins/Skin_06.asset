@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f7385e266ee94502b3562bfc3c30ab7, type: 3}
+  m_Name: Skin_06
+  m_EditorClassIdentifier: 
+  skinName: Soyoon_C
+  skinSprite: {fileID: 4692272402757131805, guid: a5a7514dc09dd4617b4e14f2c03173d8, type: 3}
+  price: 500
+  animatorController: {fileID: 9100000, guid: bf7081fd7f91842b886316c83505b023, type: 2}

@@ -34,8 +34,8 @@ public abstract class BaseItem : MonoBehaviour
         if (collision.gameObject.CompareTag("Wall"))
         {
             Vector2 normal = collision.contacts[0].normal;
-            Vector2 bounceDirection = Vector2.Reflect(rb.velocity, normal).normalized;
-            rb.velocity = bounceDirection * (rb.velocity.magnitude * bounceReductionFactor);
+            Vector2 bounceDirection = Vector2.Reflect(rb.linearVelocity, normal).normalized;
+            rb.linearVelocity = bounceDirection * (rb.linearVelocity.magnitude * bounceReductionFactor);
         }
     }
 

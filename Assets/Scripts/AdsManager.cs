@@ -42,11 +42,11 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnity
     public void InitializeAds()
     {
 #if UNITY_IOS
-        gameId = "5664137"; // 실제 iOS용 gameId를 입력하세요
+        gameId = "5912788"; // 실제 iOS용 gameId를 입력하세요
         interstitialPlacementId = "Interstitial_iOS"; // 실제 iOS용 Placement ID
         bannerPlacementId = "Banner_iOS"; // 실제 iOS용 Banner Placement ID
 #elif UNITY_ANDROID
-        gameId = "5664136"; // 실제 Android용 gameId를 입력하세요
+        gameId = "5912789"; // 실제 Android용 gameId를 입력하세요
         interstitialPlacementId = "Interstitial_Android"; // 실제 Android용 Placement ID
         bannerPlacementId = "Banner_Android"; // 실제 Android용 Banner Placement ID
 #endif

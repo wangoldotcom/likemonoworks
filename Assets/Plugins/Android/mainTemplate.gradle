@@ -25,6 +25,7 @@ dependencies {
 }
 
 android {
+	ndkPath "**NDKPATH**"
 	namespace "com.unity3d.player"
 	aaptOptions {
 		noCompress = ['.ress', '.resource', '.obb'] + unityStreamingAssets.tokenize(', ')
